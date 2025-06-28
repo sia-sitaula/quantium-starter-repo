@@ -7,72 +7,31 @@ os.chdir(r'C:\Users\Sia\Documents\quantium_tech_interview\quantium-starter-repo\
 print("After:",os.getcwd()) #check the changed directory
 print("Files in directory:", os.listdir())
 
-#import csv files as dataframes
-ds_0 =pd.read_csv('daily_sales_data_0.csv')
-print(ds_0.head(n = 5))
-#print(len(ds_0))
-ds_1 = pd.read_csv('daily_sales_data_1.csv')
-print(ds_1.head(n = 5))
-#print(len(ds_0))
-ds_2 = pd.read_csv('daily_sales_data_2.csv')
-#print(ds_2.head(n = 5))
-print(len(ds_0))
+#import csv files as dataframes into a list
+data_sets = []
+for file in os.listdir():
+    if file.endswith('.csv'):
+        file = pd.read_csv(file)
+        data_sets.append(file)
+
 
 #remove rows that are not pink morsels
 #merge quantity and price by times to create a new column sales
 #then remove product as not necessary
 
-#ds_0
-print(ds_0.dtypes)
-#remove dollar from the price column and make a sales column
-ds_0['price'] = ds_0['price'].astype(str)
-ds_0['price'] = ds_0['price'].str.replace('$','')
-ds_0['price'] = pd.to_numeric(ds_0['price'], errors='coerce')
-ds_0['sales'] = ds_0['price']*ds_0['quantity']
+processed_datasets = []
 
-#filter for pink morsel
-print(len(ds_0))
-ds_0 = ds_0[ds_0['product'].str.contains('pink morsel', na = False)]
-print(len(ds_0))
+def processing_datasets(datasets):
+    for i in datasets:
+        i['price'] = i['price'].str.replace('$', '')
+        i['price'] = pd.to_numeric(i['price'], errors='coerce')
+        i['sales'] = i['price'] * i['quantity']
+        i = i[i['product'].str.contains('pink morsel', na=False)]
+        i = i[['sales', 'date', 'region']]
+        processed_datasets.append(i)
+    return processed_datasets
 
-#select the required columns
-ds_0_processed = ds_0[['sales','date','region']]
-print(ds_0.head(n = 5))
-print(ds_0_processed.head(n = 5))
-
-
-#ds_1
-#remove dollar from the price column and make a sales column
-print(ds_1.dtypes)
-ds_1['price'] = ds_1['price'].astype(str)
-ds_1['price'] = ds_1['price'].str.replace('$','')
-ds_1['price'] = pd.to_numeric(ds_1['price'], errors='coerce')
-ds_1['sales'] = ds_1['price']*ds_1['quantity']
-
-#filter for pink morsel
-print(len(ds_1))
-ds_1 = ds_1[ds_1['product'].str.contains('pink morsel', na = False)]
-print(len(ds_1))
-
-#select the required columns
-ds_1_processed = ds_1[['sales','date','region']]
-print(ds_1.head(n = 5))
-print(ds_1_processed.head(n = 5))
-
-#ds_2
-#remove dollar from the price column and make a sales column
-print(ds_2.dtypes)
-ds_2['price'] = ds_2['price'].astype(str)
-ds_2['price'] = ds_2['price'].str.replace('$','')
-ds_2['price'] = pd.to_numeric(ds_2['price'], errors='coerce')
-ds_2['sales'] = ds_2['price']*ds_2['quantity']
-
-#filter for pink morsel
-print(len(ds_2))
-ds_2 = ds_2[ds_2['product'].str.contains('pink morsel', na = False)]
-print(len(ds_2))
-
-#select the required columns
-ds_2_processed = ds_2[['sales','date','region']]
-print(ds_2.head(n = 5))
-print(ds_2_processed.head(n = 5))
+processing_datasets(data_sets)
+processed_ds_0 = processed_datasets[0]
+processed_ds_1 = processed_datasets[1]
+processed_ds_2 = processed_datasets[2]
